@@ -107,7 +107,6 @@ async def startup_event():
     global consumer_task
     await create_tables()
     await kafka_producer.start()
-    global consumer_task
     await kafka_consumer.start()  # Inicializa o consumidor dentro de um contexto assíncrono
     consumer_task = asyncio.create_task(kafka_consumer.consume_events())
 

@@ -15,16 +15,13 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 settings = Settings()
 
 
-# Dependência para obter a sessão do banco de dados
-async def get_db() -> AsyncSession:
-    # Cria o motor assíncrono
-    engine = create_async_engine(settings.DATABASE_URL, echo=True)
 
-    # Cria uma fábrica de sessões assíncronas
+async def get_db() -> AsyncSession:
+    engine = create_async_engine(settings.DATABASE_URL, echo=True)
     AsyncSessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
-    async with AsyncSessionLocal() as session:  # Usando async with para garantir a sessão
-        yield session  # Retorna a sessão para ser usada
+    async with AsyncSessionLocal() as session:
+        yield session
 
 
 class KafkaEventConsumer:
@@ -39,7 +36,10 @@ class KafkaEventConsumer:
             value_deserializer=lambda x: json.loads(x.decode('utf-8')),
             auto_offset_reset='earliest',
             enable_auto_commit=False,
-            group_id='primo',
+            max_poll_records=100,
+            group_id=1,
+            session_timeout_ms=30000,  # aumenta para 30s
+            heartbeat_interval_ms=10000  # aumenta para 10s
         )
         await self.consumer.start()
 
@@ -47,6 +47,7 @@ class KafkaEventConsumer:
         try:
             async for event in self.consumer:
                 event_data = event.value
+
                 try:
                     await self.process_event(event_data)
                     await self.consumer.commit()

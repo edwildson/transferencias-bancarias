@@ -61,7 +61,7 @@ services:
       - backend_network
     
   kafka:
-    image: wurstmeister/kafka:latest
+    image: wurstmeister/kafka:2.12-2.4.1
     container_name: kafka
     ports:
       - "9093:9092"  # Porta do Kafka
@@ -74,6 +74,13 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181  # Conexão com o Zookeeper
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE  # Adicionando inter.broker.listener.name
       KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS: 10000
+      KAFKA_CONNECTIONS_MAX_IDLE_MS: 600000
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_MESSAGE_MAX_BYTES: 2000000
+      KAFKA_MAX_REQUEST_SIZE: 2000000
+      KAFKA_SOCKET_SEND_BUFFER_BYTES: 102400
+      KAFKA_SOCKET_RECEIVE_BUFFER_BYTES: 102400
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
     depends_on:
       - zookeeper
     restart: always
@@ -90,6 +97,9 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 10
+      ZOOKEEPER_SYNC_LIMIT: 5
+      ZOOKEEPER_MAX_CLIENT_CNXNS: 60
 
 networks:
   backend_network:

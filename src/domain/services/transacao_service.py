@@ -21,7 +21,6 @@ class TransacaoService:
 
     async def sacar(self, numero_conta, valor):
         """Processa um saque da conta especificada."""
-        breakpoint()
         if valor <= 0:
             raise ValueError("O valor deve ser maior que 0.")
 

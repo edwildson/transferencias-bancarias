@@ -45,7 +45,6 @@ class TransacaoRepository:
         self.db = db
 
     async def criar_transacao(self, tipo: TipoTransacao, conta_origem: int, valor: float, conta_destino: int = None) -> Transacao:
-        breakpoint()
         if tipo == TipoTransacao.SAQUE:
             await self.atualizar_saldo(conta_origem, -valor)
         elif tipo == TipoTransacao.TRANSFERENCIA:
