@@ -76,7 +76,7 @@ def init_logger():
     # Cria um manipulador de arquivo com rotação de tempo
     if settings.LOGGING_FILE == True:
         Path('logs').mkdir(exist_ok=True)
-        file_handler = TimedRotatingFileHandler('logs/cypher_log.log', when='midnight', backupCount=15)
+        file_handler = TimedRotatingFileHandler('logs/api_log.log', when='midnight', backupCount=15)
         file_handler.setLevel(logging_level)
         file_formatter = logging.Formatter('%(asctime)s [%(name)s %(levelname)-8s] %(message)s')
         file_handler.setFormatter(file_formatter)

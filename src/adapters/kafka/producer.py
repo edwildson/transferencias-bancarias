@@ -17,9 +17,6 @@ class KafkaProducer:
             acks=1,
         )
 
-    # async def start(self):
-    #     a = await self.producer.start()
-    #     print(a)
     async def start(self):
         """Inicia o produtor Kafka."""
         if not self.producer or self.producer._closed:
@@ -38,18 +35,16 @@ class KafkaProducer:
 
         async with self.producer as producer:
             try:
-                # Verifica e inicia o produtor se ele estiver fechado
                 if producer._closed:
                     await producer.start()
 
-                value_json = json.dumps(value).encode('utf-8')  # Converte dict para JSON
+                value_json = json.dumps(value).encode('utf-8')
                 await producer.send(topic, value_json)
-                # await producer.send(topic, value_json)
                 await producer.stop()
             except ProducerClosed:
                 print("Producer estava fechado, tentando reconectar...")
                 await self.producer.stop()
-                await self.producer.start()  # Tenta reiniciar o produtor
+                await self.producer.start()
                 await self.producer.send(topic, value_json)
             finally:
                 await producer.stop()

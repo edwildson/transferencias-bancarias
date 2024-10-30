@@ -29,10 +29,6 @@ async def deposito(numero_conta: int, valor: float, db: Session = Depends(get_db
     if conta is None:
         raise HTTPException(status_code=404, detail="Conta não encontrada")
 
-    # transacao_repo = TransacaoRepository(db)
-    # transacao = transacao_repo.criar_transacao(TipoTransacao.DEPOSITO, numero_conta, valor=valor)
-    # return transacao
-
     # Criar evento de depósito
     transacao_repo = TransacaoRepository(db)
     transacao = await transacao_repo.abrir_transacao(TipoTransacao.TRANSFERENCIA, conta_origem=numero_conta, valor=valor)
@@ -55,10 +51,6 @@ async def saque(numero_conta: int, valor: float, db: Session = Depends(get_db)):
     conta = await conta_repo.get_conta(numero_conta)
     if conta is None:
         raise HTTPException(status_code=404, detail="Conta não encontrada")
-
-    # transacao_repo = TransacaoRepository(db)
-    # transacao = transacao_repo.criar_transacao(TipoTransacao.SAQUE, numero_conta, valor=valor)
-    # return transacao
 
     # Criar evento de saque
     transacao_repo = TransacaoRepository(db)

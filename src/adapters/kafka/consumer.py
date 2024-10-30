@@ -11,9 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 
-
 settings = Settings()
-
 
 
 async def get_db() -> AsyncSession:
@@ -26,10 +24,9 @@ async def get_db() -> AsyncSession:
 
 class KafkaEventConsumer:
     def __init__(self):
-        self.consumer = None  # Inicialize como None
+        self.consumer = None
 
     async def start(self):
-        # Inicialize o consumidor dentro de um contexto assíncrono
         self.consumer = AIOKafkaConsumer(
             'transacoes',
             bootstrap_servers=settings.KAFKA.BOOTSTRAP_SERVERS,
@@ -38,8 +35,8 @@ class KafkaEventConsumer:
             enable_auto_commit=False,
             max_poll_records=100,
             group_id=1,
-            session_timeout_ms=30000,  # aumenta para 30s
-            heartbeat_interval_ms=10000  # aumenta para 10s
+            session_timeout_ms=30000,
+            heartbeat_interval_ms=10000,
         )
         await self.consumer.start()
 
