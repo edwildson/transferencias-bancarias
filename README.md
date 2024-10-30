@@ -43,27 +43,27 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
 
 2. Depósito em Conta
   Para realizar um depósito em uma conta, use:
-    ```bash
-    curl -X POST "http://localhost:8000/transacoes/deposito" \
-    -H "Content-Type: application/json" \
-    -d '{"conta": 123, "valor": 500}'
-    ```
+  ```bash
+  curl -X POST "http://localhost:8000/transacoes/deposito" \
+  -H "Content-Type: application/json" \
+  -d '{"conta": 123, "valor": 500}'
+  ```
 
 3. Saque de Conta
   Para sacar de uma conta, use:
-    ```bash
-    curl -X POST "http://localhost:8000/transacoes/saque" \
-    -H "Content-Type: application/json" \
-    -d '{"conta": 123, "valor": 200}'
-    ```
+  ```bash
+  curl -X POST "http://localhost:8000/transacoes/saque" \
+  -H "Content-Type: application/json" \
+  -d '{"conta": 123, "valor": 200}'
+  ```
 
 4. Transferência entre Contas
   Para transferir dinheiro entre contas, use:
-    ```bash
-    curl -X POST "http://localhost:8000/transacoes/transferencia" \
-    -H "Content-Type: application/json" \
-    -d '{"conta_origem": 123, "conta_destino": 456, "valor": 300}'
-    ```
+  ```bash
+  curl -X POST "http://localhost:8000/transacoes/transferencia" \
+  -H "Content-Type: application/json" \
+  -d '{"conta_origem": 123, "conta_destino": 456, "valor": 300}'
+  ```
 
 
 ## Cenários de Teste
@@ -76,15 +76,15 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
 
 2. Realizar Saque Concorrente:
   Inicie dois processos de saque simultaneamente para a mesma conta (Conta 123) com o valor de R$ 800.
-    ```bash
-    curl -X POST "http://localhost:8000/transacoes/saque" \
-    -H "Content-Type: application/json" \
-    -d '{"conta": 123, "valor": 800}' &
+  ```bash
+  curl -X POST "http://localhost:8000/transacoes/saque" \
+  -H "Content-Type: application/json" \
+  -d '{"conta": 123, "valor": 800}' &
 
-    curl -X POST "http://localhost:8000/transacoes/saque" \
-    -H "Content-Type: application/json" \
-    -d '{"conta": 123, "valor": 800}' &
-    ```
+  curl -X POST "http://localhost:8000/transacoes/saque" \
+  -H "Content-Type: application/json" \
+  -d '{"conta": 123, "valor": 800}' &
+  ```
 
 3. Verificar Saldo:
   Após a execução dos saques, verifique o saldo da Conta 123. O saldo não deve ser menor que zero e deve refletir apenas um saque.
@@ -101,15 +101,15 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
   Transferir R$ 300 da Conta 123 para a Conta 456.
   Transferir R$ 200 da Conta 123 para a Conta 456.
 
-    ```bash
-    curl -X POST "http://localhost:8000/transacoes/transferencia" \
-    -H "Content-Type: application/json" \
-    -d '{"conta_origem": 123, "conta_destino": 456, "valor": 300}' &
+  ```bash
+  curl -X POST "http://localhost:8000/transacoes/transferencia" \
+  -H "Content-Type: application/json" \
+  -d '{"conta_origem": 123, "conta_destino": 456, "valor": 300}' &
 
-    curl -X POST "http://localhost:8000/transacoes/transferencia" \
-    -H "Content-Type: application/json" \
-    -d '{"conta_origem": 123, "conta_destino": 456, "valor": 200}' &
-    ```
+  curl -X POST "http://localhost:8000/transacoes/transferencia" \
+  -H "Content-Type: application/json" \
+  -d '{"conta_origem": 123, "conta_destino": 456, "valor": 200}' &
+  ```
 
 3. Verificar Saldos:
   Após a execução das transferências, verifique os saldos das contas:
@@ -121,12 +121,12 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
   Crie uma conta com saldo de R$ 100.
 2. Saque com Saldo Insuficiente:
   Tente realizar um saque de R$ 200.
-    ```bash
-    Copiar código
-    curl -X POST "http://localhost:8000/transacoes/saque" \
-    -H "Content-Type: application/json" \
-    -d '{"conta": 123, "valor": 200}'
-    ```
+  ```bash
+  Copiar código
+  curl -X POST "http://localhost:8000/transacoes/saque" \
+  -H "Content-Type: application/json" \
+  -d '{"conta": 123, "valor": 200}'
+  ```
 
 3. Verificar Erro:
   O sistema deve retornar um erro indicando que o saldo é insuficiente para realizar o saque.
