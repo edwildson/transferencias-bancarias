@@ -96,8 +96,6 @@ async def transferencia(conta_origem: int, conta_destino: int, valor: float, db:
         "transacao_id": transacao.id,
     }
 
-    breakpoint()
-
     from app import kafka_producer
     await kafka_producer.send_event("transacoes", evento)
     return {"status": "Transação de transferência publicada no Kafka"}
