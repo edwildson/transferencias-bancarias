@@ -26,6 +26,12 @@ class TipoTransacao(str, enum.Enum):
     TRANSFERENCIA = "transferencia"
 
 
+class StatusTransacao(str, enum.Enum):
+    PENDENTE = "pendente"
+    CONCLUIDA = "concluida"
+    CANCELADA = "cancelada"
+
+
 class Transacao(Base):
     __tablename__ = 'transacoes'
 
@@ -38,6 +44,8 @@ class Transacao(Base):
 
     conta_origem_rel = relationship("Conta", foreign_keys=[conta_origem])
     conta_destino_rel = relationship("Conta", foreign_keys=[conta_destino])
+
+    status = Column(String, default="pendente")
 
     def __repr__(self):
         return f"<Transacao(id={self.id}, tipo={self.tipo}, valor={self.valor}, timestamp={self.timestamp})>"

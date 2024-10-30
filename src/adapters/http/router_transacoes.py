@@ -34,10 +34,14 @@ async def deposito(numero_conta: int, valor: float, db: Session = Depends(get_db
     # return transacao
 
     # Criar evento de depósito
+    transacao_repo = TransacaoRepository(db)
+    transacao = await transacao_repo.abrir_transacao(TipoTransacao.TRANSFERENCIA, conta_origem=numero_conta, valor=valor)
+
     evento = {
-        "tipo": "deposito",
-        "conta_destino": numero_conta,
-        "valor": valor
+        "tipo": "transferencia",
+        "conta_origem": numero_conta,
+        "valor": valor,
+        "transacao_id": transacao.id,
     }
 
     from app import kafka_producer
@@ -57,10 +61,14 @@ async def saque(numero_conta: int, valor: float, db: Session = Depends(get_db)):
     # return transacao
 
     # Criar evento de saque
+    transacao_repo = TransacaoRepository(db)
+    transacao = await transacao_repo.abrir_transacao(TipoTransacao.TRANSFERENCIA, conta_origem=numero_conta, valor=valor)
+
     evento = {
-        "tipo": "saque",
+        "tipo": "transferencia",
         "conta_origem": numero_conta,
-        "valor": valor
+        "valor": valor,
+        "transacao_id": transacao.id,
     }
 
     from app import kafka_producer
@@ -77,24 +85,26 @@ async def transferencia(conta_origem: int, conta_destino: int, valor: float, db:
     if conta_origem_data is None or conta_destino_data is None:
         raise HTTPException(status_code=404, detail="Uma ou ambas as contas não foram encontradas")
 
+    transacao_repo = TransacaoRepository(db)
+    transacao = await transacao_repo.abrir_transacao(TipoTransacao.TRANSFERENCIA, conta_origem, valor, conta_destino)
+
     evento = {
         "tipo": "transferencia",
         "conta_origem": conta_origem,
         "conta_destino": conta_destino,
-        "valor": valor
+        "valor": valor,
+        "transacao_id": transacao.id,
     }
+
+    breakpoint()
 
     from app import kafka_producer
     await kafka_producer.send_event("transacoes", evento)
     return {"status": "Transação de transferência publicada no Kafka"}
 
 
-@router.get("/{numero_conta}")
-def listar_transacoes(numero_conta: int, db: Session = Depends(get_db)):
-    # transacao_repo = TransacaoRepository(db)
-    # transacoes = transacao_repo.get_transacoes(numero_conta)
-    # return transacoes
-
-    # Essa rota pode ser mantida para listar transações do banco, caso tenha implementação futura
-    # Como estamos publicando no Kafka, você pode optar por não implementar essa rota neste momento.
-    return {"status": "Esta funcionalidade será implementada na leitura de transações do Kafka."}
+@router.get("/conta/{numero_conta}")
+async def listar_transacoes(numero_conta: int, db: Session = Depends(get_db)):
+    transacao_repo = TransacaoRepository(db)
+    transacoes = await transacao_repo.get_transacoes(numero_conta)
+    return transacoes

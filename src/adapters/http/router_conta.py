@@ -45,10 +45,3 @@ async def atualizar_conta(numero: int, nome: str, db: Session = Depends(get_db))
     if conta is None:
         raise HTTPException(status_code=404, detail="Conta não encontrada")
     return conta
-
-
-@router.delete("/{numero}")
-def excluir_conta(numero: int, db: Session = Depends(get_db)):
-    conta_repo = ContaRepository(db)
-    conta_repo.delete_conta(numero)
-    return {"detail": "Conta excluída com sucesso"}

@@ -4,7 +4,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.future import select
 from src.adapters.database.models import Conta
-from src.adapters.database.models import Transacao, TipoTransacao
+from src.adapters.database.models import Transacao, TipoTransacao, StatusTransacao
 from src.adapters.database.base import Base
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -33,26 +33,44 @@ class ContaRepository:
             await self.db.refresh(conta)
         return conta
 
-    async def delete_conta(self, numero: int) -> None:
-        conta = await self.get_conta(numero)
-        if conta:
-            await self.db.delete(conta)
-            await self.db.commit()
-
 
 class TransacaoRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    async def criar_transacao(self, tipo: TipoTransacao, conta_origem: int, valor: float, conta_destino: int = None) -> Transacao:
+    async def abrir_transacao(self, tipo: TipoTransacao, conta_origem: int, valor: float, conta_destino: int = None) -> Transacao:
+        transacao = Transacao(
+            tipo=tipo,
+            conta_origem=conta_origem,
+            conta_destino=conta_destino,
+            valor=valor,
+            status=StatusTransacao.PENDENTE
+        )
+
+        self.db.add(transacao)
+        await self.db.commit()
+        await self.db.refresh(transacao)
+        return transacao
+
+    async def efetuar_transacao(
+        self,
+        tipo: TipoTransacao,
+        conta_origem: int,
+        valor: float,
+        transacao_id: int,
+        conta_destino: int = None,
+    ) -> Transacao:
         if tipo == TipoTransacao.SAQUE:
             await self.atualizar_saldo(conta_origem, -valor)
         elif tipo == TipoTransacao.TRANSFERENCIA:
             await self.atualizar_saldo(conta_origem, -valor)
             await self.atualizar_saldo(conta_destino, valor)
 
-        transacao = Transacao(tipo=tipo, conta_origem=conta_origem, conta_destino=conta_destino, valor=valor)
-        self.db.add(transacao)
+        query = select(Transacao).where(Transacao.id == transacao_id)
+        result = await self.db.execute(query)
+        transacao = result.scalars().first()
+
+        transacao.status = StatusTransacao.CONCLUIDA
         await self.db.commit()
         await self.db.refresh(transacao)
         return transacao
@@ -69,4 +87,7 @@ class TransacaoRepository:
         return conta
 
     async def get_transacoes(self, conta_numero: int):
-        return self.db.query(Transacao).filter((Transacao.conta_origem == conta_numero) | (Transacao.conta_destino == conta_numero)).all()
+        # query = self.db.query(Transacao).filter((Transacao.conta_origem == conta_numero) | (Transacao.conta_destino == conta_numero)).all()
+        query = select(Transacao).filter((Transacao.conta_origem == conta_numero) | (Transacao.conta_destino == conta_numero))
+        result = await self.db.execute(query)
+        return result.scalars().all()

@@ -61,19 +61,20 @@ class KafkaEventConsumer:
 
     async def process_event(self, event_data):
         print(f"Processando evento: {event_data}")
-        async for db in get_db(): 
+        async for db in get_db():
             transacao_service = TransacaoService(db)
             tipo = event_data.get("tipo")
             valor = event_data.get("valor")
             conta_origem = event_data.get("conta_origem")
             conta_destino = event_data.get("conta_destino")
+            transacao_id = event_data.get("transacao_id")
 
             if tipo == "deposito":
-                await transacao_service.depositar(conta_destino, valor)
+                await transacao_service.depositar(conta_destino, valor, transacao_id)
             elif tipo == "saque":
-                await transacao_service.sacar(conta_origem, valor)
+                await transacao_service.sacar(conta_origem, valor, transacao_id)
             elif tipo == "transferencia":
-                await transacao_service.transferir(conta_origem, conta_destino, valor)
+                await transacao_service.transferir(conta_origem, conta_destino, valor, transacao_id)
             else:
                 print(f"Tipo de evento desconhecido: {tipo}")
             break
