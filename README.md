@@ -39,6 +39,7 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
   curl -X POST "http://localhost:8000/contas" \
   -H "Content-Type: application/json" \
   -d '{"numero": 123, "saldo": 1000}'
+  ```
 
 2. Depósito em Conta
   Para realizar um depósito em uma conta, use:
@@ -46,6 +47,7 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
     curl -X POST "http://localhost:8000/transacoes/deposito" \
     -H "Content-Type: application/json" \
     -d '{"conta": 123, "valor": 500}'
+    ```
 
 3. Saque de Conta
   Para sacar de uma conta, use:
@@ -53,6 +55,7 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
     curl -X POST "http://localhost:8000/transacoes/saque" \
     -H "Content-Type: application/json" \
     -d '{"conta": 123, "valor": 200}'
+    ```
 
 4. Transferência entre Contas
   Para transferir dinheiro entre contas, use:
@@ -60,6 +63,7 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
     curl -X POST "http://localhost:8000/transacoes/transferencia" \
     -H "Content-Type: application/json" \
     -d '{"conta_origem": 123, "conta_destino": 456, "valor": 300}'
+    ```
 
 
 ## Cenários de Teste
@@ -80,6 +84,7 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
     curl -X POST "http://localhost:8000/transacoes/saque" \
     -H "Content-Type: application/json" \
     -d '{"conta": 123, "valor": 800}' &
+    ```
 
 3. Verificar Saldo:
   Após a execução dos saques, verifique o saldo da Conta 123. O saldo não deve ser menor que zero e deve refletir apenas um saque.
@@ -104,6 +109,7 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
     curl -X POST "http://localhost:8000/transacoes/transferencia" \
     -H "Content-Type: application/json" \
     -d '{"conta_origem": 123, "conta_destino": 456, "valor": 200}' &
+    ```
 
 3. Verificar Saldos:
   Após a execução das transferências, verifique os saldos das contas:
@@ -120,6 +126,7 @@ Para criar uma nova conta, você pode usar o seguinte comando curl:
     curl -X POST "http://localhost:8000/transacoes/saque" \
     -H "Content-Type: application/json" \
     -d '{"conta": 123, "valor": 200}'
+    ```
 
 3. Verificar Erro:
   O sistema deve retornar um erro indicando que o saldo é insuficiente para realizar o saque.
